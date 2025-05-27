@@ -31,6 +31,7 @@ import { Message } from './types/message';
  *  - Emoji support or markdown (basic)
  *  - Highlight own messages (e.g. use localStorage to tag posts)
  *  - Limit rate (e.g. only 1 post per 10 seconds)
+ *  - Add avatars (random emoji/avatar from name hash)
  */
 
 export default function Home() {
