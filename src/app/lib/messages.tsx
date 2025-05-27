@@ -1,14 +1,19 @@
 // 📝 In-memory message store
+// ! You shouldnt need to touch this file
 
-import { Message } from '../types/message';
+import { Message } from '@/app/types/message';
 
-let messages: Message[] = [];
+// Use globalThis to persist across server instances during runtime
+const globalForMessages = globalThis as typeof globalThis & { messages?: Message[] };
 
-export const getLatestMessages = (): Message[] => {
-    return messages.slice(-20).reverse();
-};
+globalForMessages.messages ??= [];
 
-export const addMessage = (msg: Message): void => {
+export const messages = globalForMessages.messages;
+
+export function getMessages(): Message[] {
+    return messages;
+}
+
+export function addMessage(msg: Message): void {
     messages.push(msg);
-    if (messages.length > 100) messages = messages.slice(-100);
-};
+}
