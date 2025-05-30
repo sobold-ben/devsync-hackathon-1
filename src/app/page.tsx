@@ -51,6 +51,8 @@ export default function Home() {
 
     useEffect(() => {
         fetchMessages();
+        const interval = setInterval(fetchMessages, 5000);
+        return () => clearInterval(interval);
     }, []);
 
     const postMessage = async () => {
@@ -90,7 +92,7 @@ export default function Home() {
                     {messages.map((msg, i) => (
                         <p key={i} className="mb-2">
                             {msg.name && <strong className="text-green-500">{msg.name}: </strong>}
-                            {msg.message}
+                            {msg}
                         </p>
                     ))}
                 </div>
@@ -109,6 +111,8 @@ export default function Home() {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        minLength={1}
+                        maxLength={140}
                         className="ml-2 flex-1 p-2 bg-black border border-green-400 text-green-300 font-mono outline-none"
                         placeholder="Type your message..."
                     />
