@@ -7,7 +7,7 @@ export async function POST(req) {
         const { message } = await req.json();
 
         if (!message || typeof message !== 'string') {
-            return NextResponse.json({ error: 'Неверное сообщение' }, { status: 400 });
+            return NextResponse.json({ error: 'Wrong message' }, { status: 400 });
         }
 
         const filePath = path.join(process.cwd(), 'public', 'data', 'messages.json');
@@ -20,6 +20,6 @@ export async function POST(req) {
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: 'Ошибка записи' }, { status: 500 });
+        return NextResponse.json({ error: 'Wright error' }, { status: 500 });
     }
 }
