@@ -7,24 +7,43 @@ import { NextResponse } from 'next/server';
 import { getMessages, addMessage } from '@/app/lib/messages';
 import { Message } from '@/app/types/message';
 
-//? getMessages will return all input messages
-//? addMessage will add a message to storage
+// //? getMessages will return all input messages
+// //? addMessage will add a message to storage
 
 export async function GET() {
-    return NextResponse.json(getMessages());
+    // Return only latest 20 messages, newest first
+    const messages = getMessages()
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 20);
+
+    return NextResponse.json(messages);
 }
 
 export async function POST(request: Request) {
     try {
-        console.log(await request.json());
+        const body = await request.json();
 
-        addMessage({
-            id: 'some_id',
-            name: 'developer',
-            message: 'this is a message',
-        });
+        const name = (body.name || '').trim().slice(0, 30);
+        const message = (body.message || '').trim();
 
-        return NextResponse.json({ success: true }, { status: 201 });
+        // Validate message
+        if (!message || message.length < 1 || message.length > 140) {
+            return NextResponse.json(
+                { error: 'Message must be between 1–140 characters.' },
+                { status: 400 }
+            );
+        }
+
+        const newMessage: Message = {
+            id: crypto.randomUUID(),
+            name,
+            message,
+            timestamp: Date.now(),
+        };
+
+        addMessage(newMessage);
+
+        return NextResponse.json(newMessage, { status: 201 });
     } catch {
         return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
