@@ -10,26 +10,6 @@
 // //? getMessages will return all input messages
 // //? addMessage will add a message to storage
 
-// export async function GET() {
-//     return NextResponse.json(getMessages());
-// }
-
-// export async function POST(request: Request) {
-//     try {
-//         console.log(await request.json());
-
-//         addMessage({
-//             id: 'some_id',
-//             name: 'developer',
-//             message: 'this is a message',
-//         });
-
-//         return NextResponse.json({ success: true }, { status: 201 });
-//     } catch {
-//         return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
-//     }
-// }
-
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import path from 'path';
