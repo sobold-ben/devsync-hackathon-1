@@ -1,67 +1,90 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Message } from './types/message';
 
-/**
- * 🛠️ Hackathon Message Wall
- *
- * 🧠 Core Idea:
- *  Users can post short public messages with an optional name.
- *  Messages appear instantly (polling every 5 seconds).
- *
- * 🔌 API Details:
- *  Endpoint: /api/messages
- *  Methods:
- *    - GET     → Returns latest 20 messages (newest first)
- *    - POST    → Accepts { name?, message } and stores it
- *
- * 🔐 Validation Rules:
- *  - message: required, 1–140 characters
- *  - name: optional, max 30 characters
- *
- * 🎯 Completion Goals:
- *  - Input form (name + message)
- *  - Submit message via POST
- *  - Fetch + display last 20 messages via GET
- *  - Poll API every 5 seconds to refresh messages
- *
- * 🚀 Extra Ideas (optional stretch goals):
- *  - Timestamp display ("3m ago", etc.)
- *  - Emoji support or markdown (basic)
- *  - Highlight own messages (e.g. use localStorage to tag posts)
- *  - Limit rate (e.g. only 1 post per 10 seconds)
- *  - Add avatars (random emoji/avatar from name hash)
- */
+type Message = {
+    id: string;
+    name: string;
+    message: string;
+};
 
-export default function Home() {
+export default function Page() {
+    const [name, setName] = useState('');
+    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
+    const [status, setStatus] = useState<string | null>(null);
 
     const fetchMessages = async () => {
-        // TODO: fetch messages and update state
+        const res = await fetch('/api/messages');
+        const data = await res.json();
+        setMessages(data.slice(-20).reverse());
     };
 
-    const postMessage = async () => {
-        // TODO: validate text
-        // TODO: set body
-        // TODO: send POST request
-    };
-
-    // Fetch messages every 5 seconds
     useEffect(() => {
         fetchMessages();
     }, []);
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const res = await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: crypto.randomUUID(),
+                name,
+                message,
+            }),
+        });
+
+        if (res.ok) {
+            setStatus('Message sent!');
+            setMessage('');
+            fetchMessages();
+        } else {
+            setStatus('Failed to send message.');
+        }
+    };
+
     return (
-        <main>
-            <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
-            <p className="text-center">What will you create?</p>
+        <main className="p-4 max-w-xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">Send a Message</h1>
 
-            {/* 🧱 Messages List - TODO: map messages here */}
-            <section></section>
+            <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+                <input
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="border p-2 w-full"
+                    required
+                />
+                <textarea
+                    placeholder="Your message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="border p-2 w-full"
+                    required
+                />
+                <button type="submit" className="bg-blue-500 text-white p-2">
+                    Send Message
+                </button>
+                {status && <p>{status}</p>}
+            </form>
 
-            {/* 📝 Form - TODO: hook up inputs and submit */}
-            <section></section>
+            <div className="space-y-2">
+                <h2 className="text-xl font-semibold">Recent Messages</h2>
+                {messages.length === 0 ? (
+                    <p>No messages yet.</p>
+                ) : (
+                    messages.map((msg) => (
+                        <div key={msg.id} className="border p-2 rounded">
+                            <p className="font-bold">{msg.name}</p>
+                            <p>{msg.message}</p>
+                        </div>
+                    ))
+                )}
+            </div>
         </main>
     );
 }

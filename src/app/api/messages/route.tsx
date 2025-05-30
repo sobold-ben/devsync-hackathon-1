@@ -22,6 +22,7 @@ export async function POST(request: Request) {
             id: 'some_id',
             name: 'developer',
             message: 'this is a message',
+            timestamp: 1748612846,
         });
 
         return NextResponse.json({ success: true }, { status: 201 });
