@@ -2,66 +2,69 @@
 
 import { useEffect, useState } from 'react';
 import { Message } from './types/message';
-
-/**
- * 🛠️ Hackathon Message Wall
- *
- * 🧠 Core Idea:
- *  Users can post short public messages with an optional name.
- *  Messages appear instantly (polling every 5 seconds).
- *
- * 🔌 API Details:
- *  Endpoint: /api/messages
- *  Methods:
- *    - GET     → Returns latest 20 messages (newest first)
- *    - POST    → Accepts { name?, message } and stores it
- *
- * 🔐 Validation Rules:
- *  - message: required, 1–140 characters
- *  - name: optional, max 30 characters
- *
- * 🎯 Completion Goals:
- *  - Input form (name + message)
- *  - Submit message via POST
- *  - Fetch + display last 20 messages via GET
- *  - Poll API every 5 seconds to refresh messages
- *
- * 🚀 Extra Ideas (optional stretch goals):
- *  - Timestamp display ("3m ago", etc.)
- *  - Emoji support or markdown (basic)
- *  - Highlight own messages (e.g. use localStorage to tag posts)
- *  - Limit rate (e.g. only 1 post per 10 seconds)
- *  - Add avatars (random emoji/avatar from name hash)
- */
+import MessageForm from './components/message-dashboard';
 
 export default function Home() {
-    const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
-    const fetchMessages = async () => {
-        // TODO: fetch messages and update state
-    };
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch('/api/messages');
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
 
-    const postMessage = async () => {
-        // TODO: validate text
-        // TODO: set body
-        // TODO: send POST request
-    };
+  const postMessage = async (message: string) => {
+    if (!message.trim()) return;
 
-    // Fetch messages every 5 seconds
-    useEffect(() => {
-        fetchMessages();
-    }, []);
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message.trim() }),
+      });
 
-    return (
-        <main>
-            <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
-            <p className="text-center">What will you create?</p>
+      if (!res.ok) throw new Error('Failed to post message');
 
-            {/* 🧱 Messages List - TODO: map messages here */}
-            <section></section>
+      fetchMessages(); // Refresh messages
+    } catch (error) {
+      console.error('Error posting message:', error);
+    }
+  };
 
-            {/* 📝 Form - TODO: hook up inputs and submit */}
-            <section></section>
-        </main>
-    );
+  const handleMessageSubmit = (message: string) => {
+    postMessage(message);
+  };
+
+  useEffect(() => {
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <main>
+      <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
+      <p className="text-center">What will you create?</p>
+
+      {/* 🧱 Messages List */}
+      <section>
+        {messages.map((msg, index) => (
+          <div key={index} className="border p-2 my-1 rounded bg-gray-100">
+            {msg.message}
+          </div>
+        ))}
+      </section>
+
+      {/* 📝 Form */}
+      <section className="mt-4">
+        <MessageForm onSubmit={handleMessageSubmit} />
+      </section>
+    </main>
+  );
 }
