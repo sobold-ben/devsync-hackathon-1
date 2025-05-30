@@ -45,7 +45,7 @@ export default function Home() {
             const data = await res.json();
             setMessages(data);
         } catch (e) {
-            console.error('Ошибка загрузки сообщений:', e);
+            console.error('Error loading messages:', e);
         }
     };
 
@@ -64,20 +64,15 @@ export default function Home() {
             });
 
             if (res.ok) {
-                fetchMessages(); // Refresh from API
+                fetchMessages();
                 setText('');
             } else {
-                console.error('Ошибка при отправке');
+                console.error('Error sending');
             }
         } catch (e) {
-            console.error('Ошибка сети:', e);
+            console.error('Network error:', e);
         }
     };
-
-    // Fetch messages every 5 seconds
-    useEffect(() => {
-        fetchMessages();
-    }, []);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -91,7 +86,6 @@ export default function Home() {
             <h1 className="text-2xl mb-4">PIXEL CHAT</h1>
 
             <div className="w-full max-w-xl bg-gray-900 border border-green-500 p-4">
-                {/* Окно сообщений */}
                 <div className="h-64 overflow-y-auto mb-4 border border-green-400 p-2 font-mono text-sm leading-relaxed bg-black">
                     {messages.map((msg, i) => (
                         <p key={i} className="mb-2">
@@ -101,7 +95,6 @@ export default function Home() {
                     ))}
                 </div>
 
-                {/* Ввод и кнопка */}
                 <div className="flex">
                     <input
                         type="text"
