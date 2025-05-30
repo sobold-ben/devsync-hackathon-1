@@ -54,6 +54,13 @@ export default function Home() {
 
     return (
         <main>
+            <div className="h-screen bg-black text-neon-green flex items-center justify-center font-mono">
+                {/* <h1 className="text-3xl text-neon-purple">Hack Terminal Chat</h1> */}
+
+                <div className="message">This is a secret hacker message</div>
+                <input type="text" placeholder="Type your secret..." />
+                <button>Send</button>
+            </div>
             <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
             <p className="text-center">What will you create?</p>
 
