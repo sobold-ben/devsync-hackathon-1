@@ -35,16 +35,42 @@ import { Message } from './types/message';
  */
 
 export default function Home() {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState([]);
+    const [text, setText] = useState('');
 
     const fetchMessages = async () => {
-        // TODO: fetch messages and update state
+        try {
+            const res = await fetch('/api/messages');
+            const data = await res.json();
+            setMessages(data);
+        } catch (e) {
+            console.error('Ошибка загрузки сообщений:', e);
+        }
     };
 
+    useEffect(() => {
+        fetchMessages();
+    }, []);
+
     const postMessage = async () => {
-        // TODO: validate text
-        // TODO: set body
-        // TODO: send POST request
+        if (!text.trim()) return;
+
+        try {
+            const res = await fetch('/api/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text }),
+            });
+
+            if (res.ok) {
+                setMessages((prev) => [...prev, text]);
+                setText('');
+            } else {
+                console.error('Ошибка при отправке');
+            }
+        } catch (e) {
+            console.error('Ошибка сети:', e);
+        }
     };
 
     // Fetch messages every 5 seconds
@@ -52,16 +78,45 @@ export default function Home() {
         fetchMessages();
     }, []);
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            postMessage();
+        }
+    };
+
     return (
-        <main>
-            <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
-            <p className="text-center">What will you create?</p>
+        <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-black text-green-400 font-pixel text-green-400 font-pixel">
+            <h1 className="text-2xl mb-4">PIXEL CHAT</h1>
 
-            {/* 🧱 Messages List - TODO: map messages here */}
-            <section></section>
+            <div className="w-full max-w-md bg-gray-900 border border-green-500 p-4">
+                {/* Окно сообщений */}
+                <div className="h-64 overflow-y-auto mb-4 border border-green-400 p-2 font-mono text-sm leading-relaxed bg-black">
+                    {messages.map((msg, i) => (
+                        <p key={i} className="mb-2">
+                            {msg}
+                        </p>
+                    ))}
+                </div>
 
-            {/* 📝 Form - TODO: hook up inputs and submit */}
-            <section></section>
+                {/* Ввод и кнопка */}
+                <div className="flex">
+                    <input
+                        type="text"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 p-2 bg-black border border-green-400 text-green-300 font-mono outline-none"
+                        placeholder="Type your message..."
+                    />
+                    <button
+                        onClick={postMessage}
+                        className="ml-2 px-4 py-2 bg-green-600 text-black hover:bg-green-400"
+                    >
+                        Send
+                    </button>
+                </div>
+            </div>
         </main>
     );
 }
