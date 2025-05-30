@@ -55,7 +55,7 @@ export default function Home() {
       {/* 🧱 Messages List */}
       <section>
         {messages.map((msg, index) => (
-          <div key={index} className="border p-2 my-1 rounded bg-gray-100">
+          <div key={index} className="p-2 my-1">
             {msg.message}
           </div>
         ))}
