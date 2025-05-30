@@ -73,6 +73,8 @@ export default function Home() {
     return (
         <main>
             <div className="absolute top-0 left-0 w-full h-full bg-conic/decreasing from-indigo-600 via-sky-500 to-cyan-300 p-20 blur-[120px] animate-bgAnimation"></div>
+            <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
+            <p className="text-center">What will you create?</p>
 
             {/* 🧱 Messages List - TODO: map messages here */}
             <section></section>
