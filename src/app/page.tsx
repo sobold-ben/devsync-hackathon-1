@@ -54,6 +54,7 @@ export default function Home() {
 
     return (
         <main>
+            <div className="absolute top-0 left-0 w-full h-full bg-conic/decreasing from-indigo-600 via-sky-500 to-cyan-300 p-20 blur-[120px] animate-bgAnimation"></div>
             <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
             <p className="text-center">What will you create?</p>
 
@@ -61,7 +62,22 @@ export default function Home() {
             <section></section>
 
             {/* 📝 Form - TODO: hook up inputs and submit */}
-            <section></section>
+            <section className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start relative z-1 p-20">
+                <form action="">
+                    <label htmlFor="name">Name:</label>
+                    <input
+                        className="backdrop-blur-[16px] backdrop-saturate-180 bg-slate-50/50 p-4"
+                        type="text"
+                        name="name"
+                    />
+                    <label htmlFor="message">Message:</label>
+                    <input
+                        className="backdrop-blur-[16px] backdrop-saturate-180 bg-slate-50/50 p-4"
+                        type="text"
+                        name="message"
+                    />
+                </form>
+            </section>
         </main>
     );
 }
