@@ -37,6 +37,7 @@ import { Message } from './types/message';
 export default function Home() {
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState('');
+    const [name, setName] = useState('');
 
     const fetchMessages = async () => {
         try {
@@ -94,7 +95,7 @@ export default function Home() {
                 <div className="h-64 overflow-y-auto mb-4 border border-green-400 p-2 font-mono text-sm leading-relaxed bg-black">
                     {messages.map((msg, i) => (
                         <p key={i} className="mb-2">
-                            {msg}
+                            {msg.message}
                         </p>
                     ))}
                 </div>
