@@ -60,11 +60,11 @@ export default function Home() {
             const res = await fetch('/api/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text }),
+                body: JSON.stringify({ name: name.trim(), message: text.trim() }),
             });
 
             if (res.ok) {
-                setMessages((prev) => [...prev, text]);
+                fetchMessages(); // Refresh from API
                 setText('');
             } else {
                 console.error('Ошибка при отправке');
@@ -90,11 +90,12 @@ export default function Home() {
         <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-black text-green-400 font-pixel text-green-400 font-pixel">
             <h1 className="text-2xl mb-4">PIXEL CHAT</h1>
 
-            <div className="w-full max-w-md bg-gray-900 border border-green-500 p-4">
+            <div className="w-full max-w-xl bg-gray-900 border border-green-500 p-4">
                 {/* Окно сообщений */}
                 <div className="h-64 overflow-y-auto mb-4 border border-green-400 p-2 font-mono text-sm leading-relaxed bg-black">
                     {messages.map((msg, i) => (
                         <p key={i} className="mb-2">
+                            {msg.name && <strong className="text-green-500">{msg.name}: </strong>}
                             {msg.message}
                         </p>
                     ))}
@@ -104,10 +105,18 @@ export default function Home() {
                 <div className="flex">
                     <input
                         type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        maxLength={30}
+                        placeholder="Your name (optional)"
+                        className="w-full p-2 bg-black border border-green-400 text-green-300 font-mono outline-none"
+                    />
+                    <input
+                        type="text"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="flex-1 p-2 bg-black border border-green-400 text-green-300 font-mono outline-none"
+                        className="ml-2 flex-1 p-2 bg-black border border-green-400 text-green-300 font-mono outline-none"
                         placeholder="Type your message..."
                     />
                     <button
