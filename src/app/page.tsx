@@ -39,6 +39,11 @@ export default function Home() {
 
     const fetchMessages = async () => {
         // TODO: fetch messages and update state
+        fetch('/api/messages', {
+            method: 'get',
+        })
+            .then((res) => res.json())
+            .then((json) => setMessages(json));
     };
 
     const postMessage = async () => {
@@ -52,16 +57,67 @@ export default function Home() {
         fetchMessages();
     }, []);
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        fetch('/api/messages', {
+            method: 'POST',
+            body: formData,
+        })
+            .then((res) => {
+                fetchMessages();
+            })
+            .catch(() => {});
+    };
+
     return (
         <main>
-            <h1 className="text-center text-2xl font-bold mt-4">Message Wall</h1>
-            <p className="text-center">What will you create?</p>
+            <div className="absolute top-0 left-0 w-full h-full bg-conic/decreasing from-indigo-600 via-sky-500 to-cyan-300 p-20 blur-[120px] animate-bgAnimation"></div>
 
             {/* 🧱 Messages List - TODO: map messages here */}
             <section></section>
 
             {/* 📝 Form - TODO: hook up inputs and submit */}
-            <section></section>
+            <section className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start relative z-1 p-20">
+                <h1>Add a message:</h1>
+                <form
+                    className="backdrop-blur-[16px] backdrop-saturate-180 bg-white/50 p-5 rounded-md"
+                    action=""
+                    onSubmit={handleSubmit}
+                >
+                    <label className="p-4" htmlFor="name">
+                        Name:
+                    </label>
+                    <input className=" bg-slate-50/50 p-4 rounded-md" type="text" name="name" />
+                    <label className="p-4" htmlFor="message">
+                        Message:
+                    </label>
+                    <input
+                        className="bg-slate-50/50 p-4 rounded-md m-4"
+                        type="text"
+                        name="message"
+                    />
+                    <button
+                        className="p-4 ms-px bg-slate-50/50 rounded-md text-center"
+                        type="submit"
+                    >
+                        submit
+                    </button>
+                </form>
+                <div className="">
+                    <h1 className="">Message Board:</h1>
+                    <div>
+                        {messages.map((message, index) => {
+                            return (
+                                <div className="">
+                                    <span className="font-bold">{message.name}: </span>
+                                    {message.message}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
         </main>
     );
 }
